@@ -1,3 +1,15 @@
+// Global players array available across the whole app
+(function(){
+  try {
+    if (!window.players) {
+      var rawPlayers = localStorage.getItem('players') || '[]';
+      window.players = JSON.parse(rawPlayers);
+    }
+  } catch (e) {
+    window.players = window.players || [];
+  }
+})();
+
 document.addEventListener('DOMContentLoaded', function () {
   // Footer year (if a footer is already on the page)
   var yearEl = document.getElementById('year');
@@ -94,16 +106,33 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function loadPlayers() {
     try {
+      if (Array.isArray(window.players)) return window.players;
+    } catch (e) {}
+    try {
       var raw = localStorage.getItem('players') || '[]';
-      return JSON.parse(raw);
-    } catch (e) {
-      return [];
+      var parsed = JSON.parse(raw);
+      window.players = Array.isArray(parsed) ? parsed : [];
+      return window.players;
+    } catch (e2) {
+      window.players = window.players || [];
+      return window.players;
     }
   }
   function savePlayers(arr) {
     try {
-      localStorage.setItem('players', JSON.stringify(arr));
-    } catch (e) {}
+      window.players = Array.isArray(arr) ? arr : [];
+      localStorage.setItem('players', JSON.stringify(window.players));
+    } catch (e) {
+      window.players = Array.isArray(arr) ? arr : (window.players || []);
+    }
+  }
+
+  function getFullName(p) {
+    if (!p) return '';
+    var fn = (p.firstName || '').trim();
+    var ln = (p.lastName || '').trim();
+    var combined = (fn + ' ' + ln).trim();
+    return combined || String(p.name || '').trim();
   }
 
   function renderPlayers() {
@@ -119,30 +148,184 @@ document.addEventListener('DOMContentLoaded', function () {
       var p = players[i];
       var li = document.createElement('li');
       li.className = 'list-item';
-      li.textContent = p && p.name ? p.name : '';
+      li.textContent = getFullName(p);
       playersListEl.appendChild(li);
     }
   }
 
+  // Ensure a small set of demo players exist (idempotent seeding)
+  function seedPlayersIfEmpty() {
+    var players = loadPlayers() || [];
+    var names = [
+      { firstName: 'Maria', lastName: 'Sharapova' },
+      { firstName: 'Serena', lastName: 'Williams' },
+      { firstName: 'Roger', lastName: 'Federer' },
+      { firstName: 'Novak', lastName: 'Djokovic' }
+    ];
+
+    var now = Date.now();
+    var added = 0;
+    for (var i = 0; i < names.length; i++) {
+      var fn = names[i].firstName;
+      var ln = names[i].lastName;
+      var full = (fn + ' ' + ln).trim();
+      var exists = false;
+      for (var j = 0; j < players.length; j++) {
+        if (getFullName(players[j]).toLowerCase() === full.toLowerCase()) { exists = true; break; }
+      }
+      if (!exists) {
+        players.push({ id: now + i, firstName: fn, lastName: ln, name: full, createdAt: new Date().toISOString() });
+        added++;
+      }
+    }
+    if (added > 0) {
+      savePlayers(players);
+    }
+  }
+
+  // If we're on players page (list or form exists), ensure seed and render
+  if (playersListEl || addPlayerBtn) {
+    seedPlayersIfEmpty();
+    if (playersListEl) renderPlayers();
+  }
+
   if (addPlayerBtn) {
-    bindClick('btn-add-player', function () {
-      var name = prompt('Enter player name:');
-      if (name) name = String(name).trim();
-      if (!name) return;
+    // Switch to form submit instead of prompt
+    addPlayerBtn.addEventListener('submit', function (e) {
+      if (e && e.preventDefault) e.preventDefault();
+      var firstEl = document.getElementById('player-firstname');
+      var lastEl = document.getElementById('player-lastname');
+      var firstName = firstEl && firstEl.value ? String(firstEl.value).trim() : '';
+      var lastName = lastEl && lastEl.value ? String(lastEl.value).trim() : '';
+      if (!firstName || !lastName) { alert('Please enter both first and last names.'); return; }
+      var full = (firstName + ' ' + lastName).trim();
 
       var players = loadPlayers();
       var exists = false;
       for (var i = 0; i < players.length; i++) {
-        var n = (players[i].name || '').toLowerCase();
-        if (n === name.toLowerCase()) { exists = true; break; }
+        var existingFull = getFullName(players[i]).toLowerCase();
+        if (existingFull === full.toLowerCase()) { exists = true; break; }
       }
       if (exists) { alert('Player with this name already exists.'); return; }
 
-      players.push({ id: Date.now(), name: name, createdAt: new Date().toISOString() });
+      players.push({ id: Date.now(), firstName: firstName, lastName: lastName, name: full, createdAt: new Date().toISOString() });
       savePlayers(players);
+      if (firstEl) firstEl.value = '';
+      if (lastEl) lastEl.value = '';
       renderPlayers();
     });
-    renderPlayers();
+  }
+
+  // New Match page logic
+  var createMatchForm = document.getElementById('createMatchForm');
+  var player1Select = document.getElementById('player1');
+  var player2Select = document.getElementById('player2');
+
+  function sortByNameAsc(a, b) {
+    var na = getFullName(a).toLowerCase();
+    var nb = getFullName(b).toLowerCase();
+    if (na < nb) return -1;
+    if (na > nb) return 1;
+    return 0;
+  }
+
+  function clearOptionsExceptPlaceholder(sel) {
+    if (!sel) return;
+    for (var i = sel.options.length - 1; i >= 0; i--) {
+      var opt = sel.options[i];
+      if (!opt || opt.value === '') continue;
+      sel.remove(i);
+    }
+  }
+
+  function populatePlayerSelect(selectEl) {
+    if (!selectEl) return;
+    var players = loadPlayers() || [];
+    players.sort(sortByNameAsc);
+    clearOptionsExceptPlaceholder(selectEl);
+    for (var i = 0; i < players.length; i++) {
+      var p = players[i];
+      var opt = document.createElement('option');
+      opt.value = String(p.id);
+      opt.text = getFullName(p);
+      selectEl.appendChild(opt);
+    }
+  }
+
+  function syncDisableSameSelection(sourceSel, targetSel) {
+    if (!sourceSel || !targetSel) return;
+    var selected = sourceSel.value;
+    for (var i = 0; i < targetSel.options.length; i++) {
+      var opt = targetSel.options[i];
+      if (!opt) continue;
+      // Keep placeholder non-selectable if present
+      if (opt.value === '') { /* leave disabled as-is */ continue; }
+      opt.disabled = (selected && opt.value === selected);
+    }
+    // If target currently equals source, reset target to placeholder (non-selectable)
+    if (selected && targetSel.value === selected) {
+      targetSel.value = '';
+      // fallback if value assignment didn't switch (some browsers)
+      if (targetSel.value === selected) {
+        try { targetSel.selectedIndex = 0; } catch (e) {}
+      }
+    }
+  }
+
+  function saveMatches(arr) {
+    try {
+      localStorage.setItem('matches', JSON.stringify(Array.isArray(arr) ? arr : []));
+    } catch (e) {}
+  }
+  function loadMatches() {
+    try {
+      var raw = localStorage.getItem('matches') || '[]';
+      var parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) { return []; }
+  }
+
+  if (createMatchForm && player1Select && player2Select) {
+    // Ensure we have some players
+    seedPlayersIfEmpty();
+    // Fill both selects
+    populatePlayerSelect(player1Select);
+    populatePlayerSelect(player2Select);
+
+    // Keep selections distinct
+    player1Select.addEventListener('change', function(){ syncDisableSameSelection(player1Select, player2Select); });
+    player2Select.addEventListener('change', function(){ syncDisableSameSelection(player2Select, player1Select); });
+    // Initial sync just in case of prefilled values
+    syncDisableSameSelection(player1Select, player2Select);
+    syncDisableSameSelection(player2Select, player1Select);
+
+    createMatchForm.addEventListener('submit', function(e){
+      if (e && e.preventDefault) e.preventDefault();
+      var p1 = player1Select.value;
+      var p2 = player2Select.value;
+      if (!p1 || !p2) { alert('Please choose both players.'); return; }
+      if (p1 === p2) { alert('Please choose two different players.'); return; }
+
+      var matches = loadMatches();
+      var match = {
+        id: Date.now(),
+        player1Id: Number(p1),
+        player2Id: Number(p2),
+        createdAt: new Date().toISOString(),
+        status: 'scheduled'
+      };
+      matches.push(match);
+      saveMatches(matches);
+      alert('Match created!');
+      // Optionally redirect to scores or another page later
+      try { createMatchForm.reset(); } catch (e2) {}
+      // Ensure both selects point to the non-selectable placeholder after reset
+      try { player1Select.selectedIndex = 0; } catch (e3) {}
+      try { player2Select.selectedIndex = 0; } catch (e4) {}
+      // Re-sync disabling after reset
+      syncDisableSameSelection(player1Select, player2Select);
+      syncDisableSameSelection(player2Select, player1Select);
+    });
   }
 
   // Footer clock
