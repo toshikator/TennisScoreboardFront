@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Tennis Scoreboard — New Match</title>
+    <link href="../styles.css" rel="stylesheet">
+</head>
+<body class="new-match">
+<div id="site-header"></div>
+
+<main>
+    <h1>New Match</h1>
+    <form id="createMatchForm">
+        <label for="player1">Player 1:</label>
+        <select id="player1" name="player1Id" required>
+            <option value="">Choose player 1</option>
+        </select>
+
+        <label for="player2">Player 2:</label>
+        <select id="player2" name="player2Id" required>
+            <option value="">Choose player 2</option>
+        </select>
+
+        <button type="submit">Create match</button>
+    </form>
+
+
+</main>
+
+<div id="site-footer"></div>
+
+<script src="../js/index.js"></script>
+</body>
+</html>

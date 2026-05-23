@@ -1,0 +1,71 @@
+# ---- Node / package managers ----
+node_modules/
+.npm/
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---- Build output ----
+dist/
+build/
+out/
+
+# Vite / bundlers cache
+.vite/
+.cache/
+.parcel-cache/
+.happypack/
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# ---- Env files (keep examples) ----
+.env
+.env.local
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+!.env.example
+
+# ---- IDE/editor ----
+.idea/
+.vscode/
+.history/
+
+# Editor swap/backup files
+*~
+*.swp
+*.swo
+
+# ESLint/Stylelint caches
+.eslintcache
+.stylelintcache
+
+# ---- OS / misc ----
+.DS_Store
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# PIDs
+*.pid
+*.seed
+*.pid.lock
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# Node REPL history
+.node_repl_history
+
+
+# ---- Properties config files ----
+# Ignore all .properties files (often contain local/env-specific settings)
+*.properties

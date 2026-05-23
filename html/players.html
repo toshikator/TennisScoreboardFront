@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Tennis Scoreboard — Players</title>
+    <link href="../styles.css" rel="stylesheet">
+</head>
+<body class="players">
+<div id="site-header"></div>
+
+<main>
+    <section class="section">
+        <h1>Players</h1>
+        <div class="actions" style="margin: 12px 0 20px">
+            <form id="btn-add-player">
+                <label for="player-firstname">First name</label>
+                <input id="player-firstname" name="player-firstname" placeholder="Player firstname" required type="text">
+
+                <label for="player-lastname">Last name</label>
+                <input id="player-lastname" name="player-lastname" placeholder="Player lastname" required type="text">
+
+                <button type="submit">Add Player</button>
+
+
+            </form>
+        </div>
+
+        <div aria-live="polite" class="empty-state" id="players-empty">
+            No players yet. Click "Add New Player" to create your first player.
+        </div>
+
+        <ul aria-live="polite" class="list" id="players-list"></ul>
+    </section>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="../js/index.js"></script>
+</body>
+</html>

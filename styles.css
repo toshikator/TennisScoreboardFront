@@ -1,0 +1,306 @@
+/* Tennis Scoreboard — shared styles for Home page
+   Extracted from index.html on 2026-05-20 */
+
+:root {
+  --bg: #0f172a;
+  --panel: #111827;
+  --accent: #22c55e;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  background: radial-gradient(1200px 800px at 10% 10%, #1f2937 0%, var(--bg) 55%);
+  color: var(--text);
+  /* Make footer stick to the bottom when content is short */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+header {
+  padding: 24px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.brand .logo {
+  width: 108px; height: 108px;
+  border-radius: 8px;
+  display: block;
+  object-fit: contain;
+}
+
+main { padding: 20px; flex: 1; }
+
+
+.grid {
+  max-width: 920px;
+  margin: 24px auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  padding: 16px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+  border-color: rgba(34,197,94,0.35);
+}
+
+.card h3 { margin: 0 0 6px; font-size: 18px; }
+.card p { margin: 0; color: var(--muted); font-size: 14px; }
+
+.actions { display: flex; gap: 12px; margin-top: 16px; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 10px 14px; border-radius: 10px;
+  background: #0b1220; color: var(--text);
+  border: 1px solid rgba(255,255,255,0.08);
+  cursor: pointer; text-decoration: none; font-weight: 600;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.btn:hover {
+  background: #0d1628;
+  border-color: rgba(255,255,255,0.16);
+  transform: translateY(-1px);
+}
+
+.btn.primary {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #052e13;
+  border-color: transparent;
+}
+
+.btn.primary:hover { filter: brightness(1.05); }
+
+footer { color: var(--muted); font-size: 12px; text-align: center; padding: 16px; }
+
+
+
+/* Home page background image */
+body.home {
+  /* Top overlay for readability, then the image, then the original radial gradient as base */
+  background:
+    linear-gradient(rgba(15,23,42,0.65), rgba(15,23,42,0.65)),
+    url('images/startPage.png') center / cover no-repeat fixed,
+    radial-gradient(1200px 800px at 10% 10%, #1f2937 0%, var(--bg) 55%);
+}
+
+
+/* Players page */
+body.players {
+  background:
+    linear-gradient(rgba(15,23,42,0.6), rgba(15,23,42,0.7)),
+    url('images/newPlayer.png') center / cover no-repeat fixed,
+    radial-gradient(1200px 800px at 10% 10%, #1f2937 0%, var(--bg) 55%);
+}
+body.players h1 { margin: 0 0 8px; }
+.section { max-width: 720px; margin: 0 auto; }
+.list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.list-item {
+  background: var(--panel);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+.empty-state { color: var(--muted); padding: 12px 0 16px; display: none; }
+
+
+/* New Match page */
+body.new-match {
+  /* Subtle overlay for readability over the background image */
+  background:
+    linear-gradient(rgba(15,23,42,0.6), rgba(15,23,42,0.7)),
+    url('images/newMatch.png') center / cover no-repeat fixed,
+    radial-gradient(1200px 800px at 10% 10%, #1f2937 0%, var(--bg) 55%);
+}
+
+body.new-match main {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+body.new-match h1 {
+  margin: 8px 0 16px;
+}
+
+/* Form panel */
+body.new-match #createMatchForm {
+  display: grid;
+  gap: 14px;
+  background: var(--panel);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.25);
+}
+
+
+/* Labels */
+body.new-match #createMatchForm label {
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* Inputs */
+body.new-match #createMatchForm select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: #0b1220;
+  color: var(--text);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  padding: 10px 12px;
+  height: 42px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.06s ease;
+}
+
+body.new-match #createMatchForm select:focus {
+  border-color: rgba(34,197,94,0.55);
+  box-shadow: 0 0 0 3px rgba(34,197,94,0.15);
+}
+
+/* Submit button (match .btn.primary vibe) */
+body.new-match #createMatchForm button[type="submit"] {
+  margin-top: 4px;
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 10px 16px; border-radius: 10px;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #052e13; font-weight: 700;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+body.new-match #createMatchForm button[type="submit"]:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+/* Compact layout on very small screens */
+@media (max-width: 420px) {
+  body.new-match #createMatchForm { padding: 14px; border-radius: 12px; }
+}
+
+
+/* Players page — form styling */
+body.players main {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+
+
+/* Players page — Add Player form styling */
+body.players #btn-add-player {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 14px;
+  align-items: end;
+  background: var(--panel);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.25);
+}
+
+/* Labels */
+body.players #btn-add-player label {
+  font-weight: 600;
+  color: var(--text);
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* Arrange fields in two columns (labels on top, inputs below), and button at the bottom spanning full width */
+body.players #btn-add-player label[for="player-firstname"] { grid-column: 1; grid-row: 1; }
+body.players #btn-add-player #player-firstname { grid-column: 1; grid-row: 2; }
+body.players #btn-add-player label[for="player-lastname"] { grid-column: 2; grid-row: 1; }
+body.players #btn-add-player #player-lastname { grid-column: 2; grid-row: 2; }
+body.players #btn-add-player button[type="submit"] { grid-column: 1 / -1; grid-row: 3; }
+
+/* Inputs */
+body.players #btn-add-player input[type="text"] {
+  width: 100%;
+  background: #0b1220;
+  color: var(--text);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  padding: 10px 12px;
+  height: 42px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.06s ease;
+}
+
+body.players #btn-add-player input[type="text"]::placeholder {
+  color: var(--muted);
+}
+
+body.players #btn-add-player input[type="text"]:focus {
+  border-color: rgba(34,197,94,0.55);
+  box-shadow: 0 0 0 3px rgba(34,197,94,0.15);
+}
+
+/* Submit button to match primary button style */
+body.players #btn-add-player button[type="submit"] {
+  height: 42px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #052e13;
+  font-weight: 700;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+body.players #btn-add-player button[type="submit"]:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+/* Make it stack nicely on small screens */
+@media (max-width: 640px) {
+  body.players #btn-add-player {
+    grid-template-columns: 1fr;
+    padding: 14px;
+    border-radius: 12px;
+  }
+  body.players #btn-add-player label[for="player-firstname"],
+  body.players #btn-add-player #player-firstname,
+  body.players #btn-add-player label[for="player-lastname"],
+  body.players #btn-add-player #player-lastname,
+  body.players #btn-add-player button[type="submit"] {
+    grid-column: 1;
+  }
+  body.players #btn-add-player button[type="submit"] {
+    width: 100%;
+  }
+}
