@@ -74,16 +74,12 @@ async function handleCreateMatch(event) {
     }
 
     try {
-        const match = await Api.createMatch({
+        const createdMatch = await Api.createMatch({
             player1Id: player1Id,
             player2Id: player2Id
         });
 
-        console.log("Created match:", match);
-
-        // Потом здесь можно будет сделать redirect на страницу счёта матча.
-        // Например:
-        // window.location.href = `match-score.html?matchId=${match.id}`;
+        console.log("Created match:", createdMatch);
 
         showMessage("Match created");
     } catch (error) {

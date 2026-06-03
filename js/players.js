@@ -27,7 +27,7 @@ async function renderPlayers() {
 
         playersList.innerHTML = "";
 
-        if (!players.length) {
+        if (!players || !players.length) {
             showElement(emptyMessage);
             return;
         }
@@ -77,7 +77,6 @@ async function handleCreatePlayer(event) {
 function createPlayerElement(player) {
     const item = document.createElement("div");
     item.className = "player-item";
-
     item.textContent = getPlayerFullName(player);
 
     return item;

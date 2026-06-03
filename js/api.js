@@ -3,18 +3,77 @@ const Api = {
         return request("/players");
     },
 
+    async getPlayer(id) {
+        const params = new URLSearchParams({
+            id: id
+        });
+
+        return request(`/player?${params.toString()}`);
+    },
+
     async createPlayer(player) {
-        return request("/players", {
-            method: "POST",
-            body: player
+        const params = new URLSearchParams({
+            firstName: player.firstName,
+            lastName: player.lastName
+        });
+
+        return request(`/player?${params.toString()}`, {
+            method: "POST"
         });
     },
 
     async createMatch(match) {
-        return request("/matches", {
-            method: "POST",
-            body: match
+        const params = new URLSearchParams({
+            player1Id: match.player1Id,
+            player2Id: match.player2Id
         });
+
+        return request(`/new-match?${params.toString()}`, {
+            method: "POST"
+        });
+    },
+
+    async getMatchScore(matchId) {
+        const params = new URLSearchParams({
+            match_id: matchId
+        });
+
+        return request(`/match-score?${params.toString()}`);
+    },
+
+    async addPoint(matchId, playerId) {
+        const params = new URLSearchParams({
+            match_id: matchId,
+            player_for_score_id: playerId
+        });
+
+        return request(`/match-score?${params.toString()}`, {
+            method: "POST"
+        });
+    },
+
+    async getMatches() {
+        return request("/matches");
+    },
+
+    async getMatchesByPlayer(firstName, lastName) {
+        const params = new URLSearchParams();
+
+        if (firstName) {
+            params.append("firstName", firstName);
+        }
+
+        if (lastName) {
+            params.append("lastName", lastName);
+        }
+
+        const queryString = params.toString();
+
+        if (!queryString) {
+            return request("/matches");
+        }
+
+        return request(`/matches?${queryString}`);
     }
 };
 
@@ -22,13 +81,9 @@ async function request(path, options = {}) {
     const fetchOptions = {
         method: options.method || "GET",
         headers: {
-            "Content-Type": "application/json"
+            "Accept": "application/json"
         }
     };
-
-    if (options.body) {
-        fetchOptions.body = JSON.stringify(options.body);
-    }
 
     const response = await fetch(`${AppConfig.apiBaseUrl}${path}`, fetchOptions);
 
@@ -37,11 +92,25 @@ async function request(path, options = {}) {
         throw new Error(errorMessage);
     }
 
+    return readResponseBody(response);
+}
+
+async function readResponseBody(response) {
     if (response.status === 204) {
         return null;
     }
 
-    return response.json();
+    const text = await response.text();
+
+    if (!text) {
+        return null;
+    }
+
+    try {
+        return JSON.parse(text);
+    } catch (error) {
+        return text;
+    }
 }
 
 async function readErrorMessage(response) {
