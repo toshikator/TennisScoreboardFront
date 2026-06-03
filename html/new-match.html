@@ -14,12 +14,12 @@
     <form id="createMatchForm">
         <label for="player1">Player 1:</label>
         <select id="player1" name="player1Id" required>
-            <option value="" disabled selected hidden>Choose player 1</option>
+            <option disabled hidden selected value="">Choose player 1</option>
         </select>
 
         <label for="player2">Player 2:</label>
         <select id="player2" name="player2Id" required>
-            <option value="" disabled selected hidden>Choose player 2</option>
+            <option disabled hidden selected value="">Choose player 2</option>
         </select>
 
         <button type="submit">Create match</button>
@@ -29,11 +29,9 @@
 </main>
 
 <div id="site-footer"></div>
-
-<script src="../js/utils.js"></script>
-<script src="../js/header.js"></script>
-<script src="../js/players.api.js"></script>
-<script src="../js/matches.js"></script>
-<script src="../js/footer.js"></script>
+<script src="../js/layout.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/new-match.js"></script>
 </body>
 </html>
