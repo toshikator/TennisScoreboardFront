@@ -45,25 +45,26 @@
 
     var siteHeaderMount = document.getElementById('site-header');
     if (siteHeaderMount) {
-      var headerHtml = Utils.loadFileSync(basePrefix + 'html/header.html');
-      if (headerHtml) {
-        siteHeaderMount.outerHTML = headerHtml;
-        wireHeaderActions();
-      } else {
-        siteHeaderMount.outerHTML = '<header>' +
-            '<div class="brand">' +
-            '<img class="logo" src="' + (basePrefix + 'images/logo.png') + '" alt="Tennis Scoreboard logo" width="108" height="108" decoding="async">' +
-            '<div>Tennis Scoreboard</div>' +
-            '</div>' +
-            '<div class="actions">' +
-            '<a href="#" class="btn primary" id="action-new-match">New Match</a>' +
-            '<a href="#" class="btn" id="action-new-player">Players</a>' +
-            '<a href="#" class="btn" id="action-finished">Finished Matches</a>' +
-            '<a href="#" class="btn" id="action-scores">Match Scores</a>' +
-            '</div>' +
-            '</header>';
-        wireHeaderActions();
-      }
+      Utils.loadFile(basePrefix + 'html/header.html').then(function(headerHtml){
+        if (headerHtml) {
+          siteHeaderMount.outerHTML = headerHtml;
+          wireHeaderActions();
+        } else {
+          siteHeaderMount.outerHTML = '<header>' +
+              '<div class="brand">' +
+              '<img class="logo" src="' + (basePrefix + 'images/logo.png') + '" alt="Tennis Scoreboard logo" width="108" height="108" decoding="async">' +
+              '<div>Tennis Scoreboard</div>' +
+              '</div>' +
+              '<div class="actions">' +
+              '<a href="#" class="btn primary" id="action-new-match">New Match</a>' +
+              '<a href="#" class="btn" id="action-new-player">Players</a>' +
+              '<a href="#" class="btn" id="action-finished">Finished Matches</a>' +
+              '<a href="#" class="btn" id="action-scores">Match Scores</a>' +
+              '</div>' +
+              '</header>';
+          wireHeaderActions();
+        }
+      });
     } else {
       wireHeaderActions();
     }

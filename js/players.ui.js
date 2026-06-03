@@ -69,52 +69,26 @@
           return;
         }
 
-        var posted = false;
         try {
-          var xhr = new XMLHttpRequest();
-          xhr.open('POST', 'https://bukhman.pro/tennis-scoreboard-api/players', false);
-          xhr.setRequestHeader('Accept', 'application/json');
-          xhr.setRequestHeader('Content-Type', 'application/json');
-          xhr.send(JSON.stringify({firstName: firstName, lastName: lastName}));
-          if (xhr.status >= 200 && xhr.status < 300) {
-            posted = true;
-          }
-        } catch (postErr) {}
-
-        if (!posted) {
-          try {
-            fetch('https://bukhman.pro/tennis-scoreboard-api/players', {
-              method: 'POST',
-              headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-              body: JSON.stringify({ firstName: firstName, lastName: lastName })
-            }).then(function (resp) {
-              if (!resp.ok) throw new Error('HTTP ' + resp.status);
-              posted = true;
-            }).catch(function () {
-              posted = false;
-            }).finally(function () {
-              if (posted) {
-                PlayersAPI.triggerAsyncPlayersReload(function(){
-                  if (firstEl) firstEl.value = '';
-                  if (lastEl) lastEl.value = '';
-                });
-              } else {
-                alert('Failed to add player via backend. Please try again later.');
-              }
+          fetch('https://bukhman.pro/tennis-scoreboard-api/players', {
+            method: 'POST',
+            headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+            body: JSON.stringify({ firstName: firstName, lastName: lastName })
+          }).then(function (resp) {
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+          }).then(function(){
+            PlayersAPI.triggerAsyncPlayersReload(function(){
+              if (firstEl) firstEl.value = '';
+              if (lastEl) lastEl.value = '';
             });
-            return;
-          } catch (e) {}
-        }
-
-        if (posted) {
-          PlayersAPI.loadPlayers();
-          if (firstEl) firstEl.value = '';
-          if (lastEl) lastEl.value = '';
-          if (playersListEl) renderPlayers(playersListEl, playersEmptyEl);
+          }).catch(function () {
+            alert('Failed to add player via backend. Please try again later.');
+          });
+          return;
+        } catch (e) {
+          alert('Failed to add player via backend. Please try again later.');
           return;
         }
-
-        alert('Failed to add player via backend. Please try again later.');
       });
     }
   }

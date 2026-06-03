@@ -41,14 +41,15 @@
     var basePrefix = inHtmlPath ? '../' : '';
     var siteFooterMount = document.getElementById('site-footer');
     if (siteFooterMount) {
-      var footerHtml = Utils.loadFileSync(basePrefix + 'html/footer.html');
-      if (footerHtml) {
-        siteFooterMount.outerHTML = footerHtml;
-        startFooterClock();
-      } else {
-        siteFooterMount.outerHTML = '<footer>© <span id="year"></span> Tennis Scoreboard · <span id="date-time"></span> (<span id="timezone"></span>)</footer>';
-        startFooterClock();
-      }
+      Utils.loadFile(basePrefix + 'html/footer.html').then(function(footerHtml){
+        if (footerHtml) {
+          siteFooterMount.outerHTML = footerHtml;
+          startFooterClock();
+        } else {
+          siteFooterMount.outerHTML = '<footer>© <span id="year"></span> Tennis Scoreboard · <span id="date-time"></span> (<span id="timezone"></span>)</footer>';
+          startFooterClock();
+        }
+      });
     }
   });
 })();

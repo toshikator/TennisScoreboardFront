@@ -11,17 +11,15 @@
     });
   }
 
-  function loadFileSync(url) {
+  // Async file loader replacing deprecated synchronous XHR
+  function loadFile(url) {
     try {
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', url, false);
-      xhr.setRequestHeader('Cache-Control', 'no-cache');
-      xhr.send(null);
-      if (xhr.status >= 200 && xhr.status < 300) {
-        return xhr.responseText;
-      }
-    } catch (e) {}
-    return null;
+      return fetch(url, { cache: 'no-store' })
+        .then(function (resp) { return resp.ok ? resp.text() : null; })
+        .catch(function(){ return null; });
+    } catch (e) {
+      return Promise.resolve(null);
+    }
   }
 
   function getFullName(p) {
@@ -52,7 +50,7 @@
   // Expose to global namespace for simplicity
   window.Utils = {
     bindClick: bindClick,
-    loadFileSync: loadFileSync,
+    loadFile: loadFile,
     getFullName: getFullName,
     sortByNameAsc: sortByNameAsc,
     clearOptionsExceptPlaceholder: clearOptionsExceptPlaceholder

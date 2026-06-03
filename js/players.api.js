@@ -61,28 +61,12 @@
   }
 
   function loadPlayers() {
-    // Try synchronous XHR first; fall back to async fetch
-    try {
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', 'https://bukhman.pro/tennis-scoreboard-api/players', false);
-      xhr.setRequestHeader('Accept', 'application/json');
-      xhr.send(null);
-      if (xhr.status >= 200 && xhr.status < 300 && xhr.responseText) {
-        var data = JSON.parse(xhr.responseText);
-        if (Array.isArray(data)) {
-          window.players = normalizePlayersArray(data);
-          dispatchUpdated();
-          return window.players;
-        }
-      }
-    } catch (eFetch) { /* ignore */ }
-
-    if (Array.isArray(window.players) && window.players.length) {
-      return window.players;
+    // Async-only: trigger background fetch and return current snapshot
+    if (!Array.isArray(window.players)) {
+      window.players = [];
     }
-
     triggerAsyncPlayersReload();
-    return Array.isArray(window.players) ? window.players : [];
+    return window.players;
   }
 
   // public API
