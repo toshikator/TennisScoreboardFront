@@ -24,7 +24,6 @@ async function loadInitialMatchScore(matchId) {
 
         renderMatch(matchScore);
         bindScoreButtons(matchId, matchScore);
-
         showMatchContainer();
     } catch (error) {
         console.error(error);
@@ -112,12 +111,11 @@ async function addPointAndRenderResponse(matchId, playerId) {
         const updatedMatchScore = await Api.addPoint(matchId, playerId);
 
         renderMatch(updatedMatchScore);
+        showMatchContainer();
 
         if (!updatedMatchScore.isFinished) {
-            bindScoreButtons(matchId, updatedMatchScore);
+            enableScoreButtons();
         }
-
-        showMatchContainer();
     } catch (error) {
         console.error(error);
         showError(error.message);

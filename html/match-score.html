@@ -5,18 +5,18 @@
     <title>Match Score</title>
     <link href="../styles.css" rel="stylesheet">
 </head>
-<body>
+<body class="match-score-page">
 
 <div id="header"></div>
 
 <main>
-    <section>
+    <section class="match-score-section">
         <h1>Match Score</h1>
 
         <p hidden id="match-score-error"></p>
 
-        <div hidden id="match-score-container">
-            <div>
+        <div class="match-score-container" hidden id="match-score-container">
+            <div class="score-card">
                 <h2 id="player1-name">Player 1</h2>
 
                 <p>
@@ -36,9 +36,7 @@
                 </button>
             </div>
 
-            <hr>
-
-            <div>
+            <div class="score-card">
                 <h2 id="player2-name">Player 2</h2>
 
                 <p>
@@ -58,10 +56,10 @@
                 </button>
             </div>
 
-            <hr>
-
-            <p id="match-status"></p>
-            <p id="match-winner"></p>
+            <div class="match-result">
+                <p id="match-status"></p>
+                <p id="match-winner"></p>
+            </div>
         </div>
     </section>
 </main>
