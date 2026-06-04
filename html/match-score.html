@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Match Score</title>
+    <link href="../styles.css" rel="stylesheet">
+</head>
+<body>
+
+<div id="header"></div>
+
+<main>
+    <section>
+        <h1>Match Score</h1>
+
+        <p hidden id="match-score-error"></p>
+
+        <div hidden id="match-score-container">
+            <div>
+                <h2 id="player1-name">Player 1</h2>
+
+                <p>
+                    Sets: <span id="player1-sets">0</span>
+                </p>
+
+                <p>
+                    Games: <span id="player1-games">0</span>
+                </p>
+
+                <p>
+                    Points: <span id="player1-points">0</span>
+                </p>
+
+                <button id="player1-score-button" type="button">
+                    Add point
+                </button>
+            </div>
+
+            <hr>
+
+            <div>
+                <h2 id="player2-name">Player 2</h2>
+
+                <p>
+                    Sets: <span id="player2-sets">0</span>
+                </p>
+
+                <p>
+                    Games: <span id="player2-games">0</span>
+                </p>
+
+                <p>
+                    Points: <span id="player2-points">0</span>
+                </p>
+
+                <button id="player2-score-button" type="button">
+                    Add point
+                </button>
+            </div>
+
+            <hr>
+
+            <p id="match-status"></p>
+            <p id="match-winner"></p>
+        </div>
+    </section>
+</main>
+
+<div id="footer"></div>
+
+<script src="../js/config.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/layout.js"></script>
+<script src="../js/match-score.js"></script>
+
+</body>
+</html>

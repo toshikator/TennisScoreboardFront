@@ -79,9 +79,7 @@ async function handleCreateMatch(event) {
             player2Id: player2Id
         });
 
-        console.log("Created match:", createdMatch);
-
-        showMessage("Match created");
+        window.location.href = `match-score.html?match_id=${createdMatch.matchId}`;
     } catch (error) {
         console.error(error);
         showMessage(error.message);
