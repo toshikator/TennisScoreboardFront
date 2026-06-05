@@ -15,16 +15,20 @@ async function loadHeader() {
     }
 
     const basePath = getBasePath();
-    const response = await fetch(`${basePath}html/header.html`);
 
-    if (!response.ok) {
-        console.error("Failed to load header");
-        return;
+    try {
+        const response = await fetch(`${basePath}html/header.html`);
+
+        if (!response.ok) {
+            console.error("Failed to load header");
+            return;
+        }
+
+        headerContainer.outerHTML = await response.text();
+        updateHeaderLinks(basePath);
+    } catch (error) {
+        console.error(error);
     }
-
-    headerContainer.outerHTML = await response.text();
-
-    updateHeaderLinks(basePath);
 }
 
 async function loadFooter() {
@@ -35,16 +39,20 @@ async function loadFooter() {
     }
 
     const basePath = getBasePath();
-    const response = await fetch(`${basePath}html/footer.html`);
 
-    if (!response.ok) {
-        console.error("Failed to load footer");
-        return;
+    try {
+        const response = await fetch(`${basePath}html/footer.html`);
+
+        if (!response.ok) {
+            console.error("Failed to load footer");
+            return;
+        }
+
+        footerContainer.outerHTML = await response.text();
+        updateFooterInfo();
+    } catch (error) {
+        console.error(error);
     }
-
-    footerContainer.outerHTML = await response.text();
-
-    updateFooterInfo();
 }
 
 function updateHeaderLinks(basePath) {
