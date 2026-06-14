@@ -1,20 +1,23 @@
-const playerCache = new Map();
+let playersByIdPromise = null;
 
-document.addEventListener("DOMContentLoaded", initFinishedMatchesPage);
-
-async function initFinishedMatchesPage() {
-    const searchForm = document.getElementById("matches-search-form");
+document.addEventListener("DOMContentLoaded", () => {
+    const searchForm = document.getElementById(
+        "matches-search-form"
+    );
 
     if (!searchForm) {
         return;
     }
 
-    searchForm.addEventListener("submit", handleMatchesSearch);
+    searchForm.addEventListener(
+        "submit",
+        handleSearch
+    );
 
-    await renderMatches();
-}
+    loadAndRenderMatches();
+});
 
-async function handleMatchesSearch(event) {
+async function handleSearch(event) {
     event.preventDefault();
 
     const firstName = document
@@ -27,45 +30,75 @@ async function handleMatchesSearch(event) {
         .value
         .trim();
 
-    await renderMatches(firstName, lastName);
+    await loadAndRenderMatches(
+        firstName,
+        lastName
+    );
 }
 
-async function renderMatches(firstName = "", lastName = "") {
-    const matchesList = document.getElementById("matches-list");
-    const emptyMessage = document.getElementById("matches-empty");
+async function loadAndRenderMatches(
+    firstName = "",
+    lastName = ""
+) {
+    const matchesList = document.getElementById(
+        "matches-list"
+    );
 
-    if (!matchesList || !emptyMessage) {
-        return;
-    }
+    const emptyMessage = document.getElementById(
+        "matches-empty"
+    );
+
+    const searchButton = document.getElementById(
+        "matches-search-button"
+    );
 
     matchesList.replaceChildren();
+
     emptyMessage.hidden = true;
+    searchButton.disabled = true;
 
     showStatus("Loading matches...");
 
     try {
-        const matches = await Api.getMatchesByPlayer(
-            firstName,
-            lastName
-        );
+        const [matches, playersById] =
+            await Promise.all([
+                Api.getMatchesByPlayer(
+                    firstName,
+                    lastName
+                ),
+
+                getPlayersById()
+            ]);
 
         if (!Array.isArray(matches)) {
             throw new Error(
-                "The server returned an unexpected matches response."
+                "Unexpected matches response from server"
             );
         }
 
         if (matches.length === 0) {
-            showStatus("");
             emptyMessage.hidden = false;
+            showStatus("");
+
             return;
         }
 
-        const matchElements = await Promise.all(
-            matches.map(match => createMatchElement(match))
-        );
+        const fragment =
+            document.createDocumentFragment();
 
-        matchesList.append(...matchElements);
+        for (const match of matches) {
+            const matchElement =
+                createMatchElement(
+                    match,
+                    playersById
+                );
+
+            fragment.appendChild(
+                matchElement
+            );
+        }
+
+        matchesList.appendChild(fragment);
 
         showStatus("");
     } catch (error) {
@@ -75,30 +108,71 @@ async function renderMatches(firstName = "", lastName = "") {
         );
 
         showStatus(
-            error.message || "Failed to load finished matches."
+            error.message ||
+            "Failed to load finished matches"
         );
+    } finally {
+        searchButton.disabled = false;
     }
 }
 
-async function createMatchElement(match) {
-    /*
-     * Current backend fields:
-     * player1, player2, winner.
-     *
-     * player1Id, player2Id and winnerId are retained
-     * as fallbacks for compatibility with the previous format.
-     */
-    const player1Id = match.player1 ?? match.player1Id;
-    const player2Id = match.player2 ?? match.player2Id;
-    const winnerId = match.winner ?? match.winnerId;
+async function getPlayersById() {
+    if (!playersByIdPromise) {
+        playersByIdPromise = Api.getPlayers()
+            .then(players => {
+                if (!Array.isArray(players)) {
+                    throw new Error(
+                        "Unexpected players response from server"
+                    );
+                }
 
-    const [player1, player2] = await Promise.all([
-        getPlayer(player1Id),
-        getPlayer(player2Id)
-    ]);
+                return new Map(
+                    players.map(player => [
+                        String(player.id),
+                        player
+                    ])
+                );
+            })
+            .catch(error => {
+                playersByIdPromise = null;
 
-    const player1Name = getPlayerName(player1);
-    const player2Name = getPlayerName(player2);
+                throw error;
+            });
+    }
+
+    return playersByIdPromise;
+}
+
+function createMatchElement(
+    match,
+    playersById
+) {
+    const player1Id =
+        match.player1 ?? match.player1Id;
+
+    const player2Id =
+        match.player2 ?? match.player2Id;
+
+    const winnerId =
+        match.winner ?? match.winnerId;
+
+    const player1 = playersById.get(
+        String(player1Id)
+    );
+
+    const player2 = playersById.get(
+        String(player2Id)
+    );
+
+    const player1Name = getPlayerName(
+        player1,
+        player1Id
+    );
+
+    const player2Name = getPlayerName(
+        player2,
+        player2Id
+    );
 
     const winnerName = getWinnerName(
         winnerId,
@@ -108,15 +182,23 @@ async function createMatchElement(match) {
         player2Name
     );
 
-    const matchElement = document.createElement("article");
-    matchElement.className = "player-item match-item";
+    const matchElement =
+        document.createElement("article");
 
-    const playersElement = document.createElement("strong");
+    matchElement.className =
+        "player-item match-item";
+
+    const playersElement =
+        document.createElement("strong");
+
     playersElement.textContent =
         `${player1Name} vs ${player2Name}`;
 
-    const winnerElement = document.createElement("p");
-    winnerElement.textContent = `Winner: ${winnerName}`;
+    const winnerElement =
+        document.createElement("p");
+
+    winnerElement.textContent =
+        `Winner: ${winnerName}`;
 
     matchElement.append(
         playersElement,
@@ -126,20 +208,17 @@ async function createMatchElement(match) {
     return matchElement;
 }
 
-async function getPlayer(playerId) {
-    const cacheKey = String(playerId);
-
-    if (!playerCache.has(cacheKey)) {
-        const playerRequest = Api.getPlayer(playerId);
-
-        playerCache.set(cacheKey, playerRequest);
+function getPlayerName(
+    player,
+    playerId
+) {
+    if (!player) {
+        return `Player #${playerId}`;
     }
 
-    return playerCache.get(cacheKey);
-}
-
-function getPlayerName(player) {
-    return `${player.firstName} ${player.lastName}`.trim();
+    return (
+        `${player.firstName} ${player.lastName}`
+    ).trim();
 }
 
 function getWinnerName(
@@ -149,20 +228,28 @@ function getWinnerName(
     player1Name,
     player2Name
 ) {
-    if (String(winnerId) === String(player1Id)) {
+    if (
+        String(winnerId) ===
+        String(player1Id)
+    ) {
         return player1Name;
     }
 
-    if (String(winnerId) === String(player2Id)) {
+    if (
+        String(winnerId) ===
+        String(player2Id)
+    ) {
         return player2Name;
     }
 
-    return "Unknown";
+    return `Player #${winnerId}`;
 }
 
 function showStatus(message) {
     const statusElement =
-        document.getElementById("matches-status");
+        document.getElementById(
+            "matches-status"
+        );
 
     if (statusElement) {
         statusElement.textContent = message;

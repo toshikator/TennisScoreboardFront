@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
     <title>Tennis Scoreboard — Finished Matches</title>
+
     <link href="../styles.css?v=4" rel="stylesheet">
 </head>
+
 <body class="finished-matches">
 <div id="site-header"></div>
 
@@ -16,6 +19,7 @@
         <form id="matches-search-form">
             <label for="first-name-search">
                 First name
+
                 <input
                         autocomplete="off"
                         id="first-name-search"
@@ -27,6 +31,7 @@
 
             <label for="last-name-search">
                 Last name
+
                 <input
                         autocomplete="off"
                         id="last-name-search"
@@ -36,7 +41,12 @@
                 >
             </label>
 
-            <button type="submit">Find matches</button>
+            <button
+                    id="matches-search-button"
+                    type="submit"
+            >
+                Find matches
+            </button>
         </form>
 
         <p
@@ -46,7 +56,6 @@
         ></p>
 
         <div
-                aria-live="polite"
                 class="players-list matches-list"
                 id="matches-list"
         ></div>
@@ -56,7 +65,7 @@
                 hidden
                 id="matches-empty"
         >
-            No matches were found. Try different search criteria.
+            No matches were found.
         </p>
     </section>
 </main>
@@ -66,6 +75,6 @@
 <script src="../js/config.js"></script>
 <script src="../js/api.js"></script>
 <script src="../js/layout.js"></script>
-<script src="../js/finished-matches.js"></script>
+<script src="../js/finished-matches.js?v=2"></script>
 </body>
 </html>
