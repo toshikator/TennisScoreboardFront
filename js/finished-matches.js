@@ -1,108 +1,170 @@
-document.addEventListener("DOMContentLoaded", () => {
-    initFinishedMatchesPage();
-});
+const playerCache = new Map();
+
+document.addEventListener("DOMContentLoaded", initFinishedMatchesPage);
 
 async function initFinishedMatchesPage() {
-    const matchesSearchForm = document.getElementById("matches-search-form");
-    if (!matchesSearchForm) {
+    const searchForm = document.getElementById("matches-search-form");
+
+    if (!searchForm) {
         return;
     }
-    matchesSearchForm.addEventListener("submit", handleGetMatches);
+
+    searchForm.addEventListener("submit", handleMatchesSearch);
+
     await renderMatches();
 }
 
-async function renderMatches() {
+async function handleMatchesSearch(event) {
+    event.preventDefault();
+
+    const firstName = document
+        .getElementById("first-name-search")
+        .value
+        .trim();
+
+    const lastName = document
+        .getElementById("last-name-search")
+        .value
+        .trim();
+
+    await renderMatches(firstName, lastName);
+}
+
+async function renderMatches(firstName = "", lastName = "") {
     const matchesList = document.getElementById("matches-list");
-    const emptyMessage = document.getElementById("matches-empty-state");
-    const firstNameInput = document.getElementById("first-name-search");
-    const lastNameInput = document.getElementById("last-name-search");
+    const emptyMessage = document.getElementById("matches-empty");
 
-    const firstName = firstNameInput.value.trim();
-    const lastName = lastNameInput.value.trim();
-
-    if (!matchesList) {
+    if (!matchesList || !emptyMessage) {
         return;
     }
 
+    matchesList.replaceChildren();
+    emptyMessage.hidden = true;
+
+    showStatus("Loading matches...");
+
     try {
-        const matches = await Api.getMatchesByPlayer(firstName, lastName);
+        const matches = await Api.getMatchesByPlayer(
+            firstName,
+            lastName
+        );
 
-        matchesList.innerHTML = "";
+        if (!Array.isArray(matches)) {
+            throw new Error(
+                "The server returned an unexpected matches response."
+            );
+        }
 
-        if (!matches || !matches.length) {
-            showElement(emptyMessage);
+        if (matches.length === 0) {
+            showStatus("");
+            emptyMessage.hidden = false;
             return;
         }
 
-        hideElement(emptyMessage);
+        const matchElements = await Promise.all(
+            matches.map(match => createMatchElement(match))
+        );
 
-        matches.forEach(match => {
-            const playerElement = createMatchElement(match);
-            matchesList.appendChild(playerElement);
-        });
+        matchesList.append(...matchElements);
+
+        showStatus("");
     } catch (error) {
-        console.error(error);
-        showMessage("Failed to load players");
+        console.error(
+            "Failed to load finished matches",
+            error
+        );
+
+        showStatus(
+            error.message || "Failed to load finished matches."
+        );
     }
 }
 
-async function handleGetMatches(event) {
-    event.preventDefault();
+async function createMatchElement(match) {
+    /*
+     * Current backend fields:
+     * player1, player2, winner.
+     *
+     * player1Id, player2Id and winnerId are retained
+     * as fallbacks for compatibility with the previous format.
+     */
+    const player1Id = match.player1 ?? match.player1Id;
+    const player2Id = match.player2 ?? match.player2Id;
+    const winnerId = match.winner ?? match.winnerId;
 
-    const firstNameInput = document.getElementById("first-name-search");
-    const lastNameInput = document.getElementById("last-name-search");
+    const [player1, player2] = await Promise.all([
+        getPlayer(player1Id),
+        getPlayer(player2Id)
+    ]);
 
-    const firstName = firstNameInput.value.trim();
-    const lastName = lastNameInput.value.trim();
+    const player1Name = getPlayerName(player1);
+    const player2Name = getPlayerName(player2);
 
-    if (!firstName && !lastName) {
-        showMessage("At least first name or last name is required");
-        return;
+    const winnerName = getWinnerName(
+        winnerId,
+        player1Id,
+        player2Id,
+        player1Name,
+        player2Name
+    );
+
+    const matchElement = document.createElement("article");
+    matchElement.className = "player-item match-item";
+
+    const playersElement = document.createElement("strong");
+    playersElement.textContent =
+        `${player1Name} vs ${player2Name}`;
+
+    const winnerElement = document.createElement("p");
+    winnerElement.textContent = `Winner: ${winnerName}`;
+
+    matchElement.append(
+        playersElement,
+        winnerElement
+    );
+
+    return matchElement;
+}
+
+async function getPlayer(playerId) {
+    const cacheKey = String(playerId);
+
+    if (!playerCache.has(cacheKey)) {
+        const playerRequest = Api.getPlayer(playerId);
+
+        playerCache.set(cacheKey, playerRequest);
     }
 
-    try {
-        await Api.getMatchesByPlayer({
-            firstName: firstName,
-            lastName: lastName
-        });
+    return playerCache.get(cacheKey);
+}
 
-        firstNameInput.value = "";
-        lastNameInput.value = "";
+function getPlayerName(player) {
+    return `${player.firstName} ${player.lastName}`.trim();
+}
 
-        await renderPlayers();
-    } catch (error) {
-        console.error(error);
-        showMessage(error.message);
+function getWinnerName(
+    winnerId,
+    player1Id,
+    player2Id,
+    player1Name,
+    player2Name
+) {
+    if (String(winnerId) === String(player1Id)) {
+        return player1Name;
     }
-}
 
-function createMatchElement(match) {
-    const item = document.createElement("div");
-    item.className = "match-item";
-    item.textContent = getMatchInfo(match);
-
-    return item;
-}
-
-function getMatchInfo(match) {
-    const player1 = Api.getPlayer(match.player1Id);
-    const player2 = Api.getPlayer(match.player2Id);
-    const winner = match.winner === player1 ? player1 : player2;
-    return `${player1.firstName} ${player2.firstName}`;
-}
-
-function showElement(element) {
-    if (element) {
-        element.hidden = false;
+    if (String(winnerId) === String(player2Id)) {
+        return player2Name;
     }
+
+    return "Unknown";
 }
 
-function hideElement(element) {
-    if (element) {
-        element.hidden = true;
+function showStatus(message) {
+    const statusElement =
+        document.getElementById("matches-status");
+
+    if (statusElement) {
+        statusElement.textContent = message;
     }
-}
-
-function showMessage(message) {
-    alert(message);
 }

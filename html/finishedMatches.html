@@ -2,39 +2,60 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Tennis Scoreboard — Finished Matches</title>
     <link href="../styles.css?v=4" rel="stylesheet">
 </head>
-
 <body class="finished-matches">
-
 <div id="site-header"></div>
 
 <main>
     <section class="section">
         <h1>Finished Matches</h1>
-        <!--        <form id="matches-by-firstname-form">-->
-        <!--            <label for="first-name">First name</label>-->
-        <!--            <input id="first-name" name="firstName" placeholder="Player firstname" required type="text">-->
-        <!--            <button type="submit">Find Player(s) by firstname</button>-->
-        <!--        </form>-->
-        <!--        <form id="matches-by-lastname-form">-->
-        <!--            <label for="last-name">Last name</label>-->
-        <!--            <input id="last-name" name="lastName" placeholder="Player lastname" required type="text">-->
-        <!--            <button type="submit">Find Player(s) by lastname</button>-->
-        <!--        </form>-->
+
         <form id="matches-search-form">
-            <label for="first-name-search">First name</label>
-            <input id="first-name-search" name="firstName" placeholder="Player firstname"
-                   type="text">
-            <label for="last-name-search">Last name</label>
-            <input id="last-name-search" name="lastName" placeholder="Player lastname" type="text">
-            <button type="submit">Find Matches of player</button>
+            <label for="first-name-search">
+                First name
+                <input
+                        autocomplete="off"
+                        id="first-name-search"
+                        name="firstName"
+                        placeholder="Player first name"
+                        type="text"
+                >
+            </label>
+
+            <label for="last-name-search">
+                Last name
+                <input
+                        autocomplete="off"
+                        id="last-name-search"
+                        name="lastName"
+                        placeholder="Player last name"
+                        type="text"
+                >
+            </label>
+
+            <button type="submit">Find matches</button>
         </form>
 
+        <p
+                aria-live="polite"
+                class="empty-state"
+                id="matches-status"
+        ></p>
 
-        <div class="matches-list" id="matches-list"></div>
-        <p class="matches-empty-state" hidden id="matches-empty">
+        <div
+                aria-live="polite"
+                class="players-list matches-list"
+                id="matches-list"
+        ></div>
+
+        <p
+                class="empty-state"
+                hidden
+                id="matches-empty"
+        >
             No matches were found. Try different search criteria.
         </p>
     </section>
@@ -45,6 +66,6 @@
 <script src="../js/config.js"></script>
 <script src="../js/api.js"></script>
 <script src="../js/layout.js"></script>
-
+<script src="../js/finished-matches.js"></script>
 </body>
 </html>
