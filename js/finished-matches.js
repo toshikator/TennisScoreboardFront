@@ -3,15 +3,11 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function initFinishedMatchesPage() {
-    // const formFirstname = document.getElementById("matches-by-firstname-form");
-    // const formLastname = document.getElementById("matches-by-lastname-form");
     const matchesSearchForm = document.getElementById("matches-search-form");
-
-
-    // formFirstname.addEventListener("submit", handleGetMatchesByFirstname);
-    // formLastname.addEventListener("submit", handleGetMatchesByLastname);
-    matchesSearchForm.addEventListener("submit", handleGetMatchesByFullname);
-
+    if (!matchesSearchForm) {
+        return;
+    }
+    matchesSearchForm.addEventListener("submit", handleGetMatches);
     await renderMatches();
 }
 
@@ -50,22 +46,22 @@ async function renderMatches() {
     }
 }
 
-async function handleCreatePlayer(event) {
+async function handleGetMatches(event) {
     event.preventDefault();
 
-    const firstNameInput = document.getElementById("first-name");
-    const lastNameInput = document.getElementById("last-name");
+    const firstNameInput = document.getElementById("first-name-search");
+    const lastNameInput = document.getElementById("last-name-search");
 
     const firstName = firstNameInput.value.trim();
     const lastName = lastNameInput.value.trim();
 
     if (!firstName && !lastName) {
-        showMessage("At least First name or last name is required");
+        showMessage("At least first name or last name is required");
         return;
     }
 
     try {
-        await Api.createPlayer({
+        await Api.getMatchesByPlayer({
             firstName: firstName,
             lastName: lastName
         });

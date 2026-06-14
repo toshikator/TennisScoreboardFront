@@ -10,7 +10,6 @@ async function initPlayersPage() {
     }
 
     form.addEventListener("submit", handleCreatePlayer);
-
     await renderPlayers();
 }
 
@@ -24,7 +23,6 @@ async function renderPlayers() {
 
     try {
         const players = await Api.getPlayers();
-
         playersList.innerHTML = "";
 
         if (!players || !players.length) {
