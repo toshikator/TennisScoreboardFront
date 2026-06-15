@@ -1,0 +1,121 @@
+.matches-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: end;
+    gap: 16px;
+    margin-top: 16px;
+    padding: 14px 16px;
+    background: var(--panel);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 14px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.26);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.matches-toolbar[hidden] {
+    display: none;
+}
+
+.page-size-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+}
+
+#matches-page-size {
+    height: 42px;
+    min-width: 82px;
+    padding: 8px 34px 8px 12px;
+    color: var(--text);
+    background: rgba(11, 18, 32, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 10px;
+    outline: none;
+    cursor: pointer;
+}
+
+#matches-page-size:focus {
+    border-color: rgba(34, 197, 94, 0.62);
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.16);
+}
+
+#matches-page-size option {
+    color: #e5e7eb;
+    background: #111827;
+}
+
+.matches-pagination {
+    display: grid;
+    gap: 12px;
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--panel);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 14px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.26);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.matches-pagination[hidden] {
+    display: none;
+}
+
+.pagination-summary {
+    margin: 0;
+    text-align: center;
+    color: var(--muted);
+    font-weight: 700;
+}
+
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.pagination-pages {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.pagination-controls button {
+    min-width: 42px;
+    padding: 8px 12px;
+}
+
+.pagination-page.is-active {
+    background: rgba(34, 197, 94, 0.34) !important;
+    border-color: rgba(34, 197, 94, 0.78) !important;
+    cursor: default;
+}
+
+@media (max-width: 640px) {
+    #matches-search-form {
+        grid-template-columns: 1fr;
+    }
+
+    .matches-toolbar {
+        justify-content: stretch;
+    }
+
+    .page-size-control {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .pagination-controls {
+        gap: 6px;
+    }
+
+    .pagination-controls button {
+        min-width: 38px;
+        padding: 8px 10px;
+    }
+}

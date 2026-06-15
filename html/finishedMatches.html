@@ -3,12 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-
     <title>Tennis Scoreboard — Finished Matches</title>
-
     <link href="../styles.css?v=4" rel="stylesheet">
+    <link href="../finished-matches.css?v=2" rel="stylesheet">
 </head>
-
 <body class="finished-matches">
 <div id="site-header"></div>
 
@@ -19,7 +17,6 @@
         <form id="matches-search-form">
             <label for="first-name-search">
                 First name
-
                 <input
                         autocomplete="off"
                         id="first-name-search"
@@ -31,7 +28,6 @@
 
             <label for="last-name-search">
                 Last name
-
                 <input
                         autocomplete="off"
                         id="last-name-search"
@@ -48,6 +44,17 @@
                 Find matches
             </button>
         </form>
+
+        <div class="matches-toolbar" id="matches-toolbar">
+            <label class="page-size-control" for="matches-page-size">
+                Matches per page
+                <select id="matches-page-size" name="pageSize">
+                    <option selected value="6">6</option>
+                    <option value="12">12</option>
+                    <option value="24">24</option>
+                </select>
+            </label>
+        </div>
 
         <p
                 aria-live="polite"
@@ -67,14 +74,66 @@
         >
             No matches were found.
         </p>
+
+        <nav
+                aria-label="Finished matches pages"
+                class="matches-pagination"
+                hidden
+                id="matches-pagination"
+        >
+            <p
+                    class="pagination-summary"
+                    id="pagination-summary"
+            ></p>
+
+            <div class="pagination-controls">
+                <button
+                        aria-label="Go to first page"
+                        id="pagination-first"
+                        type="button"
+                >
+                    First
+                </button>
+
+                <button
+                        aria-label="Go to previous page"
+                        id="pagination-previous"
+                        type="button"
+                >
+                    Previous
+                </button>
+
+                <div
+                        aria-label="Page numbers"
+                        class="pagination-pages"
+                        id="pagination-pages"
+                ></div>
+
+                <button
+                        aria-label="Go to next page"
+                        id="pagination-next"
+                        type="button"
+                >
+                    Next
+                </button>
+
+                <button
+                        aria-label="Go to last page"
+                        id="pagination-last"
+                        type="button"
+                >
+                    Last
+                </button>
+            </div>
+        </nav>
     </section>
 </main>
 
 <div id="site-footer"></div>
 
 <script src="../js/config.js"></script>
-<script src="../js/api.js"></script>
+<script src="../js/api.js?v=3"></script>
 <script src="../js/layout.js"></script>
-<script src="../js/finished-matches.js?v=2"></script>
+<script src="../js/finished-matches.js?v=4"></script>
 </body>
 </html>

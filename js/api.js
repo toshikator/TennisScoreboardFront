@@ -4,10 +4,7 @@ const Api = {
     },
 
     async getPlayer(id) {
-        const params = new URLSearchParams({
-            id: id
-        });
-
+        const params = new URLSearchParams({id: id});
         return request(`/player?${params.toString()}`);
     },
 
@@ -56,8 +53,14 @@ const Api = {
         return request("/matches");
     },
 
-    async getMatchesByPlayer(firstName, lastName) {
+    async getMatchesByPlayer(
+        firstName,
+        lastName,
+        page = 1,
+        limit = 6
+    ) {
         const params = new URLSearchParams();
+        const hasFilter = Boolean(firstName || lastName);
 
         if (firstName) {
             params.append("firstName", firstName);
@@ -67,13 +70,18 @@ const Api = {
             params.append("lastName", lastName);
         }
 
-        const queryString = params.toString();
-
-        if (!queryString) {
-            return request("/matches");
+        if (!hasFilter) {
+            params.append("page", String(page));
+            params.append("limit", String(limit));
         }
 
-        return request(`/matches?${queryString}`);
+        const query = params.toString();
+
+        return request(
+            query
+                ? `/matches?${query}`
+                : "/matches"
+        );
     }
 };
 
@@ -85,7 +93,10 @@ async function request(path, options = {}) {
         }
     };
 
-    const response = await fetch(`${AppConfig.apiBaseUrl}${path}`, fetchOptions);
+    const response = await fetch(
+        `${AppConfig.apiBaseUrl}${path}`,
+        fetchOptions
+    );
 
     if (!response.ok) {
         const errorMessage = await readErrorMessage(response);
@@ -117,7 +128,12 @@ async function readErrorMessage(response) {
     const text = await response.text();
 
     if (text) {
-        return text;
+        try {
+            const body = JSON.parse(text);
+            return body.message || text;
+        } catch (error) {
+            return text;
+        }
     }
 
     return `Request failed with status ${response.status}`;
